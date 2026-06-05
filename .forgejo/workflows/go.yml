@@ -1,0 +1,20 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: codeberg-tiny
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - run: go build -o cream .
+      - run: test -z "$(gofmt -l .)"
+      - run: go test -vet=off ./...
+      - run: go vet
+      # TODO: enable in the future
+      # - run: go run honnef.co/go/tools/cmd/staticcheck@latest ./...
+      # - run: go run github.com/kisielk/errcheck@latest ./...
